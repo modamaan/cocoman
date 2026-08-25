@@ -9,8 +9,6 @@ export async function ProductRecommendations({ productId }: { productId: string 
   return (
     <div className="w-full flex flex-col gap-8 py-16 border-t border-jet-black/10">
       <div className="flex justify-center items-center gap-4 text-xs font-sans font-bold tracking-widest uppercase text-jet-black">
-        <span>Complete The Look</span>
-        <span className="w-px h-4 bg-jet-black/20" />
         <span className="opacity-60">People Also Bought</span>
       </div>
 

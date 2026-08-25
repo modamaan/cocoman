@@ -42,7 +42,7 @@ export async function DiscoverCollections() {
     <section className="bg-warm-off-white text-jet-black py-20 px-4 md:px-16 w-full">
       {/* Header */}
       <div className="flex justify-between items-end mb-16">
-        <h2 className="text-2xl md:text-3xl font-serif font-bold uppercase tracking-tight">
+        <h2 className="text-base md:text-3xl font-serif font-bold uppercase tracking-tight">
           DISCOVER THE COLLECTIONS
         </h2>
         <Link 

@@ -1,3 +1,9 @@
+function isDynamicServerError(err: any): boolean {
+  if (!err) return false;
+  const e = err.error || err;
+  return e.digest === 'DYNAMIC_SERVER_USAGE' || (e.message && typeof e.message === 'string' && e.message.includes('Dynamic server usage'));
+}
+
 type GraphQLResponse<T> = {
   data: T;
   errors?: Array<{ message: string }>;
@@ -52,6 +58,7 @@ export async function shopifyFetch<T>({
       body: body.data,
     };
   } catch (e) {
+    if (isDynamicServerError(e)) throw e;
     throw {
       error: e,
       query,
@@ -87,6 +94,7 @@ export async function getCollections(): Promise<Collection[]> {
 
     return res.body.collections.edges.map(edge => edge.node);
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn('⚠️ Shopify credentials missing or invalid. Falling back to mock data for collections.');
     
     // Fallback Mock Data
@@ -164,6 +172,7 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
       return slide;
     });
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn('⚠️ Failed to fetch hero slides:', error);
     return [];
   }
@@ -199,6 +208,7 @@ function parseMenuUrls(items: any[], domain: string): MenuItem[] {
         finalUrl = originalUrl;
       }
     } catch (e) {
+    if (isDynamicServerError(e)) throw e;
       // If URL parsing fails, it might already be a relative path.
       // Security: Ensure it starts with '/' to prevent javascript: or relative path traversal injections.
       if (originalUrl.startsWith('/')) {
@@ -230,6 +240,7 @@ export async function getMenu(handle: string): Promise<MenuItem[]> {
     
     return parseMenuUrls(items, cleanDomain);
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn(`⚠️ Failed to fetch menu ${handle}:`, error);
     return [];
   }
@@ -311,6 +322,7 @@ export async function getCollectionProducts(
       availableFilters: collection.products.filters
     };
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn(`⚠️ Failed to fetch products for collection ${handle}:`, error);
     return null;
   }
@@ -353,6 +365,7 @@ export async function getPromoMetafields(): Promise<PromoMetafields> {
 
     return { title, endDate };
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn('⚠️ Failed to fetch promo metafields:', error);
     return { title: null, endDate: null };
   }
@@ -422,6 +435,7 @@ export async function getInstagramPosts(): Promise<InstagramPost[]> {
       return post;
     });
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn('⚠️ Failed to fetch Instagram posts:', error);
     return [];
   }
@@ -482,6 +496,7 @@ export async function getProduct(handle: string): Promise<ProductDetails | null>
       returnPolicy: product.returnPolicy?.value || null
     };
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn(`⚠️ Failed to fetch product ${handle}:`, error);
     return null;
   }
@@ -511,6 +526,7 @@ export async function getProductRecommendations(productId: string): Promise<Prod
       };
     });
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn(`⚠️ Failed to fetch recommendations for ${productId}:`, error);
     return [];
   }
@@ -526,6 +542,7 @@ export async function createCart(): Promise<any> {
     });
     return res.body?.cartCreate?.cart;
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn(`⚠️ Failed to create cart:`, error);
     return null;
   }
@@ -541,6 +558,7 @@ export async function addToCart(cartId: string, lines: { merchandiseId: string; 
     });
     return res.body?.cartLinesAdd?.cart;
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn(`⚠️ Failed to add to cart:`, error);
     return null;
   }
@@ -556,6 +574,7 @@ export async function updateCart(cartId: string, lines: { id: string; quantity: 
     });
     return res.body?.cartLinesUpdate?.cart;
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn(`⚠️ Failed to update cart:`, error);
     return null;
   }
@@ -571,6 +590,7 @@ export async function removeFromCart(cartId: string, lineIds: string[]): Promise
     });
     return res.body?.cartLinesRemove?.cart;
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn(`⚠️ Failed to remove from cart:`, error);
     return null;
   }
@@ -586,6 +606,7 @@ export async function getCart(cartId: string): Promise<any> {
     });
     return res.body?.cart;
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn(`⚠️ Failed to get cart ${cartId}:`, error);
     return null;
   }
@@ -617,6 +638,7 @@ export async function getProducts(query: string): Promise<Product[]> {
       };
     });
   } catch (error) {
+    if (isDynamicServerError(error)) throw error;
     console.warn(`⚠️ Failed to fetch products for query ${query}:`, error);
     return [];
   }

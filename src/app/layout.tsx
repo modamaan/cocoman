@@ -22,6 +22,9 @@ const cardo = Cardo({
 export const metadata: Metadata = {
   title: "Cocoman - Wear What Feels Like You",
   description: "Premium streetwear storefront",
+  icons: {
+    icon: "/cocoman_favicon.png",
+  },
 };
 
 export default async function RootLayout({

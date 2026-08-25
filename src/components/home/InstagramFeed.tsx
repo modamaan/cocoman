@@ -12,7 +12,7 @@ export async function InstagramFeed() {
   return (
     <section className="bg-warm-off-white text-jet-black py-16 md:py-24 w-full border-t border-jet-black/5 overflow-hidden">
       <div className="px-6 md:px-16 mb-8 md:mb-12 flex flex-col md:flex-row items-center justify-between gap-4">
-        <h2 className="text-2xl md:text-3xl font-serif font-bold uppercase tracking-tight">
+        <h2 className="text-base md:text-3xl font-serif font-bold uppercase tracking-tight">
           @COCMAN.OFFICIAL
         </h2>
         <a 
