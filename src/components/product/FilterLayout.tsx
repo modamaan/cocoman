@@ -31,6 +31,58 @@ function Accordion({ title, children, defaultOpen = false }: { title: string, ch
   );
 }
 
+function PriceRangeFilter() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [min, setMin] = useState(searchParams.get('minPrice') || '');
+  const [max, setMax] = useState(searchParams.get('maxPrice') || '');
+
+  const applyPrice = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams(searchParams.toString());
+    if (min) params.set('minPrice', min);
+    else params.delete('minPrice');
+    
+    if (max) params.set('maxPrice', max);
+    else params.delete('maxPrice');
+    
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  return (
+    <form onSubmit={applyPrice} className="flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <div className="relative w-full">
+          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs opacity-50">₹</span>
+          <input 
+            type="number" 
+            placeholder="Min" 
+            value={min} 
+            onChange={(e) => setMin(e.target.value)} 
+            className="w-full border border-jet-black/20 pl-6 pr-2 py-2 text-sm font-sans bg-transparent focus:outline-none focus:border-jet-black"
+          />
+        </div>
+        <span className="opacity-50">-</span>
+        <div className="relative w-full">
+          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs opacity-50">₹</span>
+          <input 
+            type="number" 
+            placeholder="Max" 
+            value={max} 
+            onChange={(e) => setMax(e.target.value)} 
+            className="w-full border border-jet-black/20 pl-6 pr-2 py-2 text-sm font-sans bg-transparent focus:outline-none focus:border-jet-black"
+          />
+        </div>
+      </div>
+      <button type="submit" className="w-full bg-jet-black text-pure-white text-[10px] font-bold uppercase tracking-widest py-2.5 hover:opacity-80 transition-opacity">
+        Apply Filter
+      </button>
+    </form>
+  );
+}
+
 function FilterLayoutInner({ children, availableFilters = [] }: { children: React.ReactNode, availableFilters?: Filter[] }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -38,6 +90,16 @@ function FilterLayoutInner({ children, availableFilters = [] }: { children: Reac
 
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
+
+  const activeFiltersCount = searchParams.getAll('filter').length + (searchParams.has('minPrice') || searchParams.has('maxPrice') ? 1 : 0);
+
+  const clearFilters = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('filter');
+    params.delete('minPrice');
+    params.delete('maxPrice');
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   useEffect(() => {
     const handleOutsideClick = () => setIsSortOpen(false);
@@ -106,6 +168,11 @@ function FilterLayoutInner({ children, availableFilters = [] }: { children: Reac
             className="flex items-center justify-center border border-jet-black/20 hover:border-jet-black px-6 py-2.5 text-sm font-sans transition-colors min-w-[120px]"
           >
             {isFiltersOpen ? 'Hide Filters' : 'Filters'}
+            {activeFiltersCount > 0 && (
+              <span className="ml-2 bg-jet-black text-pure-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+                {activeFiltersCount}
+              </span>
+            )}
           </button>
         )}
 
@@ -146,8 +213,22 @@ function FilterLayoutInner({ children, availableFilters = [] }: { children: Reac
         {/* Sidebar */}
         {isFiltersOpen && availableFilters.length > 0 && (
           <aside className="w-full lg:w-[280px] flex-shrink-0 animate-in fade-in slide-in-from-left-4 duration-300 lg:sticky lg:top-32">
+            
+            {/* Active Filters Header */}
+            {activeFiltersCount > 0 && (
+              <div className="flex items-center justify-between pb-4 border-b border-jet-black/10">
+                <span className="text-sm font-sans font-bold uppercase tracking-widest">Active Filters</span>
+                <button 
+                  onClick={clearFilters}
+                  className="text-[11px] font-sans font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity"
+                >
+                  Clear All
+                </button>
+              </div>
+            )}
+
             {availableFilters.map(filter => (
-              <Accordion key={filter.id} title={filter.label} defaultOpen={true}>
+              <Accordion key={filter.id} title={filter.label} defaultOpen={false}>
                 {filter.type === 'LIST' ? (
                   <div className="flex flex-col gap-2">
                     {filter.values.map(val => {
@@ -175,7 +256,7 @@ function FilterLayoutInner({ children, availableFilters = [] }: { children: Reac
                     })}
                   </div>
                 ) : filter.type === 'PRICE_RANGE' ? (
-                  <div className="text-xs opacity-50 font-sans">Price range filtering is active in Shopify but currently handled via custom URL params if needed.</div>
+                  <PriceRangeFilter />
                 ) : null}
               </Accordion>
             ))}

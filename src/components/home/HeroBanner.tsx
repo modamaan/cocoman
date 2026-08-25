@@ -11,11 +11,11 @@ export async function HeroBanner() {
     {
       id: 'mock-1',
       image: { url: 'https://images.unsplash.com/photo-1550614000-4b95d415d183?q=80&w=2000&auto=format&fit=crop', altText: '', width: 2000, height: 1000 },
-      buttonLink: '/collections/all'
+      buttonLink: '/collections/all-products'
     }
   ];
 
-  const firstSlideLink = activeSlides[0].buttonLink || '/collections/all';
+  const firstSlideLink = activeSlides[0].buttonLink || '/collections/all-products';
 
   return (
     <section className="relative h-screen w-full overflow-hidden bg-jet-black">

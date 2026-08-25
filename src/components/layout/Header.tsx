@@ -8,32 +8,32 @@ import { SearchOverlay } from './SearchOverlay';
 
 function MobileMenuAccordion({ item, setIsMobileMenuOpen }: { item: any, setIsMobileMenuOpen: (v: boolean) => void }) {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
     <div className="flex flex-col gap-4">
-      <button 
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between uppercase hover:opacity-70 transition-opacity w-full text-left font-semibold"
       >
         <span>{item.title}</span>
         <svg className={`transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
-      
+
       {isOpen && (
         <div className="flex flex-col gap-4 pl-4 border-l border-pure-white/20 animate-in fade-in slide-in-from-top-2 pt-2">
           {item.finalItems.map((subItem: any) => (
-            <Link 
+            <Link
               key={subItem.id}
-              href={subItem.url || '#'} 
+              href={subItem.url || '#'}
               onClick={() => setIsMobileMenuOpen(false)}
               className="uppercase hover:opacity-70 transition-opacity text-[13px] opacity-70"
             >
               {subItem.title}
             </Link>
           ))}
-          <Link 
+          <Link
             href={item.url || '#'}
             onClick={() => setIsMobileMenuOpen(false)}
             className="uppercase hover:opacity-70 transition-opacity text-[13px] font-bold mt-2"
@@ -58,7 +58,7 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
   const augmentedMenuItems = menuItems.map(item => {
     const isProductsItem = item.title.toUpperCase() === 'PRODUCTS' || item.title.toUpperCase() === 'CATALOG';
     const hasNestedItems = item.items && item.items.length > 0;
-    
+
     let finalItems = item.items || [];
     if (isProductsItem && !hasNestedItems && collections.length > 0) {
       finalItems = collections.map(col => ({
@@ -83,7 +83,7 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
           if (item.showDropdown) {
             return (
               <div key={item.id} className="relative group">
-                <Link 
+                <Link
                   href={item.url || '#'}
                   aria-haspopup="true"
                   aria-expanded="false"
@@ -91,7 +91,7 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
                 >
                   <span>{item.title}</span>
                   <svg className="transition-transform group-hover:rotate-180" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </Link>
                 {/* CSS-only dropdown menu */}
@@ -102,17 +102,17 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
                         const t = subItem.title.toLowerCase();
                         let icon = <div className="w-1.5 h-1.5 rounded-full bg-jet-black/40" />;
                         if (t.includes('shirt') || t.includes('polo')) {
-                          icon = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.38 3.46L16 2a8 8 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg>;
+                          icon = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.38 3.46L16 2a8 8 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z" /></svg>;
                         } else if (t.includes('jacket') || t.includes('hoodie')) {
-                          icon = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.38 3.46L16 2a8 8 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/><path d="M12 2v20"/></svg>;
+                          icon = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.38 3.46L16 2a8 8 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z" /><path d="M12 2v20" /></svg>;
                         } else if (t.includes('bottom') || t.includes('pant')) {
-                          icon = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 22H5a2 2 0 01-2-2V4a2 2 0 012-2h14a2 2 0 012 2v16a2 2 0 01-2 2h-4l-3-7-3 7z"/></svg>;
+                          icon = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 22H5a2 2 0 01-2-2V4a2 2 0 012-2h14a2 2 0 012 2v16a2 2 0 01-2 2h-4l-3-7-3 7z" /></svg>;
                         }
 
                         return (
-                          <Link 
-                            key={subItem.id} 
-                            href={subItem.url || '#'} 
+                          <Link
+                            key={subItem.id}
+                            href={subItem.url || '#'}
                             className="hover:opacity-60 transition-opacity flex items-center gap-3 focus:outline-none focus-visible:ring-1 focus-visible:ring-jet-black uppercase font-bold text-[10px] tracking-widest"
                           >
                             <span className="opacity-80">{icon}</span>
@@ -121,15 +121,15 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
                         );
                       })}
                     </div>
-                    
+
                     <div className="pt-4 border-t border-jet-black/10">
-                      <Link 
+                      <Link
                         href="/collections/all-products"
                         className="flex items-center gap-2 hover:opacity-60 transition-opacity uppercase font-bold text-[10px] tracking-widest"
                       >
                         VIEW ALL PRODUCTS
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M5 12h14M12 5l7 7-7 7"/>
+                          <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
                       </Link>
                     </div>
@@ -149,9 +149,9 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
 
           // Render a standard link
           return (
-            <Link 
-              key={item.id} 
-              href={finalUrl} 
+            <Link
+              key={item.id}
+              href={finalUrl}
               className="hover:opacity-70 transition-opacity focus:outline-none focus-visible:ring-1 focus-visible:ring-pure-white focus-visible:ring-offset-4 focus-visible:ring-offset-jet-black uppercase"
             >
               {item.title}
@@ -162,9 +162,9 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
 
       {/* Utilities */}
       <div className="flex items-center gap-4 md:gap-6 text-sm">
-        <button 
+        <button
           suppressHydrationWarning
-          aria-label="Search" 
+          aria-label="Search"
           onClick={() => setIsSearchOpen(true)}
           className="hover:opacity-70 transition-opacity"
         >
@@ -189,18 +189,19 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
         </button>
 
         {/* Mobile Hamburger Menu Toggle */}
-        <button 
-          aria-label="Menu" 
+        <button
+          suppressHydrationWarning
+          aria-label="Menu"
           className="md:hidden hover:opacity-70 transition-opacity ml-2"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           ) : (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M4 8h16M4 16h16" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M4 8h16M4 16h16" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}
         </button>
@@ -213,10 +214,10 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
             {augmentedMenuItems.map((item) => {
               if (item.showDropdown) {
                 return (
-                  <MobileMenuAccordion 
-                    key={item.id} 
-                    item={item} 
-                    setIsMobileMenuOpen={setIsMobileMenuOpen} 
+                  <MobileMenuAccordion
+                    key={item.id}
+                    item={item}
+                    setIsMobileMenuOpen={setIsMobileMenuOpen}
                   />
                 );
               }
@@ -229,9 +230,9 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
               }
 
               return (
-                <Link 
+                <Link
                   key={item.id}
-                  href={finalUrl} 
+                  href={finalUrl}
                   className="hover:opacity-70 transition-opacity uppercase"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -244,9 +245,9 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
       )}
 
       {/* Search Overlay */}
-      <SearchOverlay 
-        isOpen={isSearchOpen} 
-        onClose={() => setIsSearchOpen(false)} 
+      <SearchOverlay
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
         collections={collections}
       />
     </header>

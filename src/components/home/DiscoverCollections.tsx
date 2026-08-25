@@ -39,14 +39,14 @@ export async function DiscoverCollections() {
   ];
 
   return (
-    <section className="bg-warm-off-white text-jet-black py-20 px-8 md:px-16 w-full">
+    <section className="bg-warm-off-white text-jet-black py-20 px-4 md:px-16 w-full">
       {/* Header */}
       <div className="flex justify-between items-end mb-16">
         <h2 className="text-2xl md:text-3xl font-serif font-bold uppercase tracking-tight">
           DISCOVER THE COLLECTIONS
         </h2>
         <Link 
-          href="/collections/all" 
+          href="/collections/all-products" 
           className="hidden md:flex items-center gap-2 text-xs font-semibold tracking-wider uppercase hover:opacity-70 transition-opacity"
         >
           VIEW ALL
@@ -56,13 +56,13 @@ export async function DiscoverCollections() {
         </Link>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8">
+      {/* Scrollable Container */}
+      <div className="flex overflow-x-auto gap-4 md:gap-8 pb-8 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {displayCollections.map((collection) => (
           <Link 
             key={collection.id} 
             href={collection.url}
-            className="group flex flex-col items-center gap-6"
+            className="group flex flex-col items-center gap-4 md:gap-6 w-[135px] sm:w-[160px] md:w-[200px] lg:w-[220px] shrink-0 snap-start md:snap-center"
           >
             {/* Pill shaped container */}
             <div className="w-full aspect-[1/2] rounded-[100px] overflow-hidden bg-soft-ivory relative flex items-center justify-center">
@@ -90,7 +90,7 @@ export async function DiscoverCollections() {
 
       <div className="mt-12 flex justify-center md:hidden">
         <Link 
-          href="/collections/all" 
+          href="/collections/all-products" 
           className="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase border border-jet-black/20 px-6 py-3"
         >
           VIEW ALL
