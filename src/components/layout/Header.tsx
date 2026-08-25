@@ -173,12 +173,12 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
             <path d="M21 21l-4.3-4.3"></path>
           </svg>
         </button>
-        <button aria-label="Account" suppressHydrationWarning className="hover:opacity-70 transition-opacity">
+        <Link href="/account" aria-label="Account" suppressHydrationWarning className="hover:opacity-70 transition-opacity">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
-        </button>
+        </Link>
         <button suppressHydrationWarning onClick={openCart} aria-label="Cart" className="hover:opacity-70 transition-opacity flex items-center gap-1">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path>

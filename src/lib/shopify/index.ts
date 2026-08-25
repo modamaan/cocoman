@@ -643,3 +643,116 @@ export async function getProducts(query: string): Promise<Product[]> {
     return [];
   }
 }
+
+// ==========================================
+// CUSTOMER & ACCOUNT
+// ==========================================
+
+export async function customerAccessTokenCreate(email: string, password: string): Promise<string | null> {
+  try {
+    const { customerAccessTokenCreateMutation } = await import('./mutations/customer');
+    const res = await shopifyFetch<any>({
+      query: customerAccessTokenCreateMutation,
+      variables: { input: { email, password } },
+      cache: 'no-store'
+    });
+
+    const data = res.body?.customerAccessTokenCreate;
+    if (data?.customerUserErrors?.length > 0) {
+      console.error('Login error:', data.customerUserErrors);
+      return null;
+    }
+    return data?.customerAccessToken?.accessToken || null;
+  } catch (error) {
+    if (isDynamicServerError(error)) throw error;
+    console.warn('⚠️ Failed to create customer access token:', error);
+    return null;
+  }
+}
+
+export async function customerCreate(email: string, password: string, firstName?: string, lastName?: string): Promise<boolean> {
+  try {
+    const { customerCreateMutation } = await import('./mutations/customer');
+    const res = await shopifyFetch<any>({
+      query: customerCreateMutation,
+      variables: { input: { email, password, firstName, lastName, acceptsMarketing: true } },
+      cache: 'no-store'
+    });
+
+    const data = res.body?.customerCreate;
+    if (data?.customerUserErrors?.length > 0) {
+      console.error('Registration error:', data.customerUserErrors);
+      return false;
+    }
+    return !!data?.customer?.id;
+  } catch (error) {
+    if (isDynamicServerError(error)) throw error;
+    console.warn('⚠️ Failed to create customer:', error);
+    return false;
+  }
+}
+
+export async function getCustomer(customerAccessToken: string): Promise<any> {
+  try {
+    const { getCustomerQuery } = await import('./queries/customer');
+    const res = await shopifyFetch<any>({
+      query: getCustomerQuery,
+      variables: { customerAccessToken },
+      cache: 'no-store'
+    });
+
+    return res.body?.customer || null;
+  } catch (error) {
+    if (isDynamicServerError(error)) throw error;
+    console.warn('⚠️ Failed to get customer:', error);
+    return null;
+  }
+}
+
+export async function customerAddressCreate(customerAccessToken: string, address: any): Promise<boolean> {
+  try {
+    const { customerAddressCreateMutation } = await import('./mutations/customer');
+    const res = await shopifyFetch<any>({
+      query: customerAddressCreateMutation,
+      variables: { customerAccessToken, address },
+      cache: 'no-store'
+    });
+    return res.body?.customerAddressCreate?.customerUserErrors?.length === 0;
+  } catch (error) {
+    if (isDynamicServerError(error)) throw error;
+    console.warn('⚠️ Failed to create address:', error);
+    return false;
+  }
+}
+
+export async function customerAddressUpdate(customerAccessToken: string, id: string, address: any): Promise<boolean> {
+  try {
+    const { customerAddressUpdateMutation } = await import('./mutations/customer');
+    const res = await shopifyFetch<any>({
+      query: customerAddressUpdateMutation,
+      variables: { customerAccessToken, id, address },
+      cache: 'no-store'
+    });
+    return res.body?.customerAddressUpdate?.customerUserErrors?.length === 0;
+  } catch (error) {
+    if (isDynamicServerError(error)) throw error;
+    console.warn('⚠️ Failed to update address:', error);
+    return false;
+  }
+}
+
+export async function customerDefaultAddressUpdate(customerAccessToken: string, addressId: string): Promise<boolean> {
+  try {
+    const { customerDefaultAddressUpdateMutation } = await import('./mutations/customer');
+    const res = await shopifyFetch<any>({
+      query: customerDefaultAddressUpdateMutation,
+      variables: { customerAccessToken, addressId },
+      cache: 'no-store'
+    });
+    return res.body?.customerDefaultAddressUpdate?.customerUserErrors?.length === 0;
+  } catch (error) {
+    if (isDynamicServerError(error)) throw error;
+    console.warn('⚠️ Failed to set default address:', error);
+    return false;
+  }
+}
