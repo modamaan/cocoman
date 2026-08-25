@@ -45,7 +45,7 @@ export async function DynamicCollections() {
           <section key={collection.id} className="bg-soft-ivory text-jet-black py-16 px-6 md:px-16 w-full border-t border-jet-black/5">
             {/* Header */}
             <div className="flex justify-between items-end mb-12">
-              <h2 className="text-base md:text-3xl font-serif font-bold uppercase tracking-tight">
+              <h2 className="text-lg md:text-3xl font-serif font-bold uppercase tracking-tight">
                 {collection.title}
               </h2>
               <Link 
