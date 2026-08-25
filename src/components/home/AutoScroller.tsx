@@ -60,9 +60,28 @@ export function AutoScroller({ children }: { children: React.ReactNode }) {
     return () => cancelAnimationFrame(animationFrameId);
   }, [shouldScroll, isHovered, isDragging]);
 
+  const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const pauseAutoScroll = () => {
+    setIsHovered(true);
+    if (resumeTimeoutRef.current) {
+      clearTimeout(resumeTimeoutRef.current);
+    }
+  };
+
+  const resumeAutoScroll = (delay = 0) => {
+    if (resumeTimeoutRef.current) {
+      clearTimeout(resumeTimeoutRef.current);
+    }
+    resumeTimeoutRef.current = setTimeout(() => {
+      setIsHovered(false);
+    }, delay);
+  };
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
     setIsDragging(true);
+    pauseAutoScroll();
     setStartX(e.pageX - containerRef.current.offsetLeft);
     setScrollLeftPos(containerRef.current.scrollLeft);
   };
@@ -77,21 +96,21 @@ export function AutoScroller({ children }: { children: React.ReactNode }) {
 
   const handleMouseUpOrLeave = () => {
     setIsDragging(false);
-    setIsHovered(false);
+    resumeAutoScroll(0);
   };
 
   return (
     <div 
       ref={containerRef}
       className={`w-full flex gap-4 md:gap-6 overflow-x-auto py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={pauseAutoScroll}
       onMouseLeave={handleMouseUpOrLeave}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUpOrLeave}
       onMouseMove={handleMouseMove}
-      onTouchStart={() => setIsHovered(true)}
-      onTouchEnd={() => setIsHovered(false)}
-      style={{ scrollBehavior: 'auto' }}
+      onTouchStart={pauseAutoScroll}
+      onTouchEnd={() => resumeAutoScroll(1500)} // Delay resume on touch to allow momentum scrolling
+      style={{ scrollBehavior: 'auto', WebkitOverflowScrolling: 'touch' }}
     >
       {children}
     </div>

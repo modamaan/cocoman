@@ -1,5 +1,4 @@
 import { HeroBanner } from "@/components/home/HeroBanner";
-import { FeaturedPieces } from '@/components/home/FeaturedPieces';
 import { DiscoverCollections } from "@/components/home/DiscoverCollections";
 import { DynamicCollections } from "@/components/home/DynamicCollections";
 import { PromoCountdown } from "@/components/home/PromoCountdown";

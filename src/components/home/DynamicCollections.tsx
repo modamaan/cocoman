@@ -24,13 +24,13 @@ export async function DynamicCollections() {
       }
 
       const collectionData = handle ? await getCollectionProducts(handle, 'COLLECTION_DEFAULT', false) : null;
-      return collectionData;
+      return collectionData ? { collection: collectionData, handle } : null;
     })
   );
 
   // Filter out any collections that failed to fetch or have no products
   const activeCollections = collectionsWithProducts.filter(
-    (col) => col !== null && col.products && col.products.length > 0
+    (col) => col !== null && col.collection.products && col.collection.products.length > 0
   );
 
   if (activeCollections.length === 0) {
@@ -39,18 +39,17 @@ export async function DynamicCollections() {
 
   return (
     <>
-      {activeCollections.map((collection, index) => {
-        // Alternate background color slightly if desired, or keep them all soft-ivory
-        // We'll stick to the soft-ivory from the design, but maybe add a top border to separate them
+      {activeCollections.map((colData, index) => {
+        const { collection, handle } = colData!;
         return (
-          <section key={collection!.id} className="bg-soft-ivory text-jet-black py-16 px-6 md:px-16 w-full border-t border-jet-black/5">
+          <section key={collection.id} className="bg-soft-ivory text-jet-black py-16 px-6 md:px-16 w-full border-t border-jet-black/5">
             {/* Header */}
             <div className="flex justify-between items-end mb-12">
               <h2 className="text-xl md:text-2xl font-serif font-bold uppercase tracking-tight">
-                {collection!.title}
+                {collection.title}
               </h2>
               <Link 
-                href={`/collections/${collection!.id.split('/').pop()?.toLowerCase() || collection!.title.toLowerCase().replace(/\s+/g, '-')}`}
+                href={`/collections/${handle}`}
                 className="flex items-center gap-2 text-[10px] md:text-xs font-semibold tracking-wider uppercase hover:opacity-70 transition-opacity"
               >
                 VIEW ALL
@@ -61,7 +60,7 @@ export async function DynamicCollections() {
             </div>
 
             {/* Products Carousel */}
-            <ProductCarousel products={collection!.products} />
+            <ProductCarousel products={collection.products} />
 
           </section>
         );
