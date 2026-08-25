@@ -1,0 +1,18 @@
+export const getMenuQuery = /* GraphQL */ `
+  query getMenu($handle: String!) {
+    menu(handle: $handle) {
+      id
+      title
+      items {
+        id
+        title
+        url
+        items {
+          id
+          title
+          url
+        }
+      }
+    }
+  }
+`;
