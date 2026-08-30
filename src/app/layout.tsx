@@ -7,6 +7,8 @@ import { cookies } from "next/headers";
 import { getMenu, getCollections, getCart } from "@/lib/shopify";
 import { CartProvider } from "@/components/cart/CartContext";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
+import { EarlyAccessPopup } from "@/components/ui/EarlyAccessPopup";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -56,11 +58,13 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col font-sans bg-warm-off-white text-jet-black">
         <CartProvider>
+          <AnnouncementBar />
           <Header menuItems={activeMenuItems} collections={collections} cart={cart} />
           {children}
           <CartDrawer cart={cart} />
         </CartProvider>
         <Footer />
+        <EarlyAccessPopup />
       </body>
     </html>
   );

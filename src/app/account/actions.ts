@@ -76,6 +76,15 @@ export async function setDefaultAddress(addressId: string) {
   const token = (await cookies()).get(COOKIE_NAME)?.value;
   if (!token) return { success: false, error: 'Not authenticated' };
   
-  const success = await customerDefaultAddressUpdate(token, addressId);
+    const success = await customerDefaultAddressUpdate(token, addressId);
   return { success };
+}
+
+export async function recoverPassword(email: string) {
+  const { recoverCustomerPassword } = await import('@/lib/shopify');
+  const success = await recoverCustomerPassword(email);
+  if (success) {
+    return { success: true };
+  }
+  return { success: false, error: 'Failed to send recovery email. Please check your email address.' };
 }

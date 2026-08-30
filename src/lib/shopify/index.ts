@@ -756,3 +756,25 @@ export async function customerDefaultAddressUpdate(customerAccessToken: string, 
     return false;
   }
 }
+
+export async function recoverCustomerPassword(email: string): Promise<boolean> {
+  try {
+    const { customerRecoverMutation } = await import('./mutations/customer');
+    const res = await shopifyFetch<any>({
+      query: customerRecoverMutation,
+      variables: { email },
+      cache: 'no-store'
+    });
+
+    const data = res.body?.customerRecover;
+    if (data?.customerUserErrors?.length > 0) {
+      console.error('Recover password error:', data.customerUserErrors);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    if (isDynamicServerError(error)) throw error;
+    console.warn('⚠️ Failed to recover password:', error);
+    return false;
+  }
+}

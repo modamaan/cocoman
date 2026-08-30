@@ -10,8 +10,8 @@ export function OrdersView({ orders }: { orders: any[] }) {
         <h2 className="text-xl font-serif font-bold uppercase tracking-tight mb-6">Orders</h2>
         <div className="bg-white p-8 text-center border border-jet-black/10">
           <p className="text-jet-black/70 mb-6">You haven't placed any orders yet.</p>
-          <Link 
-            href="/collections/all-products" 
+          <Link
+            href="/collections/all-products"
             className="inline-block bg-jet-black text-soft-ivory py-3 px-8 text-sm font-semibold uppercase tracking-wider hover:bg-jet-black/90 transition-colors"
           >
             Start Shopping
@@ -24,7 +24,7 @@ export function OrdersView({ orders }: { orders: any[] }) {
   return (
     <div>
       <h2 className="text-xl font-serif font-bold uppercase tracking-tight mb-6">Orders</h2>
-      
+
       <div className="flex flex-col gap-6">
         {orders.map((order) => (
           <div key={order.id} className="bg-white border border-jet-black/10 overflow-hidden">
@@ -42,7 +42,7 @@ export function OrdersView({ orders }: { orders: any[] }) {
                 <p className="text-sm font-semibold">#{order.orderNumber}</p>
               </div>
             </div>
-            
+
             <div className="p-6 flex flex-col gap-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -55,7 +55,7 @@ export function OrdersView({ orders }: { orders: any[] }) {
                 {order.lineItems.edges.map((edge: any, index: number) => {
                   const item = edge.node;
                   const image = item.variant?.image;
-                  
+
                   return (
                     <div key={index} className="flex gap-4 items-center">
                       <div className="relative w-20 h-24 bg-soft-ivory shrink-0 border border-jet-black/5">

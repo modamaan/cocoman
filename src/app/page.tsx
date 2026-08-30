@@ -11,10 +11,7 @@ export default function Home() {
       <DiscoverCollections />
 
       {/* Bottom Promo Section */}
-      <a
-        href="/collections/men"
-        className="relative block w-full bg-jet-black border-t border-pure-white/10 hover:opacity-95 transition-opacity"
-      >
+      <div className="relative block w-full bg-jet-black border-t border-pure-white/10">
         {/* On desktop we can keep the fixed height, on mobile we use aspect ratio so the image isn't severely cropped */}
         <div className="w-full h-auto aspect-square md:aspect-auto md:h-[90vh]">
           <img
@@ -23,7 +20,7 @@ export default function Home() {
             className="object-contain md:object-cover object-center w-full h-full"
           />
         </div>
-      </a>
+      </div>
 
       <DynamicCollections />
 

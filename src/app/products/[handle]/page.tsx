@@ -78,11 +78,6 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
       {/* Product Values */}
       <ProductValues />
-
-      {/* Recommendations */}
-      <Suspense fallback={<div className="h-96 w-full animate-pulse bg-jet-black/5" />}>
-        <ProductRecommendations productId={product.id} />
-      </Suspense>
     </main>
   );
 }
