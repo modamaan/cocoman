@@ -11,10 +11,10 @@ export function Footer() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     const formData = new FormData(e.currentTarget);
     const result = await subscribeToNewsletter(formData);
-    
+
     if (result.success) {
       localStorage.setItem('earlyAccessSubscribed', 'true');
       window.dispatchEvent(new Event('earlyAccessSubscribedEvent'));
@@ -35,7 +35,6 @@ export function Footer() {
             <h4 className="text-[11px] font-bold tracking-widest uppercase">Customer Service</h4>
             <div className="flex flex-col gap-4 text-[13.5px] opacity-60">
               <Link href="/contact" className="hover:opacity-100 transition-opacity">Contact us</Link>
-              <Link href="/faq" className="hover:opacity-100 transition-opacity">FAQ's</Link>
             </div>
           </div>
 
@@ -47,7 +46,6 @@ export function Footer() {
               <Link href="/privacy" className="hover:opacity-100 transition-opacity">Privacy Policy</Link>
               <Link href="/shipping" className="hover:opacity-100 transition-opacity">Shipping Policy</Link>
               <Link href="/terms" className="hover:opacity-100 transition-opacity">Terms and Conditions</Link>
-              <Link href="/investors" className="hover:opacity-100 transition-opacity">Investor Relations</Link>
             </div>
           </div>
 
@@ -60,7 +58,7 @@ export function Footer() {
                 You're on the list
               </div>
             ) : (
-              <form 
+              <form
                 onSubmit={handleSubmit}
                 suppressHydrationWarning
                 className="flex w-full border border-pure-white/20 focus-within:border-pure-white/70 transition-colors"

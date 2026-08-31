@@ -57,21 +57,21 @@ export function EarlyAccessPopup() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     const formData = new FormData(e.currentTarget);
     const result = await subscribeToNewsletter(formData);
-    
+
     if (result.success) {
       setIsSuccess(true);
       localStorage.setItem('earlyAccessSubscribed', 'true');
       window.dispatchEvent(new Event('earlyAccessSubscribedEvent'));
-      
+
       // Auto close after 3 seconds
       setTimeout(() => {
         setIsOpen(false);
       }, 3000);
     }
-    
+
     setIsSubmitting(false);
   };
 
@@ -81,7 +81,7 @@ export function EarlyAccessPopup() {
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-jet-black/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="relative w-full max-w-lg bg-soft-ivory border border-jet-black/10 shadow-2xl p-8 md:p-12">
         {/* Close button */}
-        <button 
+        <button
           onClick={handleClose}
           className="absolute top-4 right-4 p-2 text-jet-black/60 hover:text-jet-black transition-colors"
           aria-label="Close"
@@ -107,17 +107,17 @@ export function EarlyAccessPopup() {
             <p className="text-sm text-jet-black/70 mb-8 leading-relaxed">
               Premium streetwear, produced in limited quantities. Get first access to our new drops and exclusive member-only collections before they sell out.
             </p>
-            
+
             <form onSubmit={handleSubmit} className="flex flex-col gap-4" suppressHydrationWarning>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 name="email"
-                placeholder="Email address" 
+                placeholder="Email address"
                 required
                 suppressHydrationWarning
                 className="w-full bg-transparent border border-jet-black/20 focus:border-jet-black px-4 py-3 text-sm outline-none transition-colors"
               />
-              <button 
+              <button
                 type="submit"
                 disabled={isSubmitting}
                 suppressHydrationWarning
