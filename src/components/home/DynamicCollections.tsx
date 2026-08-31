@@ -24,7 +24,7 @@ export async function DynamicCollections() {
       }
 
       const collectionData = handle ? await getCollectionProducts(handle, 'COLLECTION_DEFAULT', false) : null;
-      return collectionData ? { collection: collectionData, handle } : null;
+      return collectionData ? { collection: collectionData, handle, menuTitle: item.title } : null;
     })
   );
 
@@ -40,13 +40,13 @@ export async function DynamicCollections() {
   return (
     <>
       {activeCollections.map((colData, index) => {
-        const { collection, handle } = colData!;
+        const { collection, handle, menuTitle } = colData!;
         return (
           <section key={collection.id} className="bg-soft-ivory text-jet-black py-16 px-6 md:px-16 w-full border-t border-jet-black/5">
             {/* Header */}
             <div className="flex justify-between items-end mb-12">
               <h2 className="text-lg md:text-3xl font-serif font-bold uppercase tracking-tight">
-                {collection.title}
+                {menuTitle || collection.title}
               </h2>
               <Link 
                 href={`/collections/${handle}`}

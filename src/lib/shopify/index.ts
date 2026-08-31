@@ -88,7 +88,7 @@ export async function getCollections(): Promise<Collection[]> {
     }>({
       query: getCollectionsQuery,
       variables: {
-        first: 6
+        first: 100
       }
     });
 
