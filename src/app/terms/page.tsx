@@ -13,9 +13,9 @@ export default function TermsOfServicePage() {
         <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-widest mb-10 md:mb-12 text-center break-words">
           Terms of Use
         </h1>
-        
+
         <div className="space-y-10 md:space-y-12 text-[14px] sm:text-sm md:text-[15px] leading-relaxed opacity-90">
-          
+
           <section>
             <p className="mb-4">
               Access to and use of cocoman.store and the products and service available through the website are subject to the following terms, conditions, and notices (“Terms of Service”). By browsing through these Terms of Service and using the services provided by our website, you agree to all Terms of Service along with the Privacy Policy, which may be updated by us from time to time.
@@ -150,12 +150,12 @@ export default function TermsOfServicePage() {
           <section>
             <div className="bg-jet-black/5 p-5 md:p-6 border border-jet-black/10 text-[13.5px] sm:text-sm overflow-hidden break-words mt-8">
               <p>
-                If you have any questions, comments, or requests regarding our Terms of Service or the website, please contact us at: <br/>
+                If you have any questions, comments, or requests regarding our Terms of Service or the website, please contact us at: <br />
                 <a href="mailto:care@cocoman.store" className="underline hover:opacity-70 transition-opacity font-bold mt-2 inline-block">care@cocoman.store</a>
               </p>
             </div>
           </section>
-          
+
         </div>
       </div>
     </div>
