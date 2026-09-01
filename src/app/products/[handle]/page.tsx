@@ -18,9 +18,29 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   const product = await getProduct(resolvedParams.handle);
   if (!product) return notFound();
 
+  const title = product.seo?.title || product.title;
+  const description = product.seo?.description || product.descriptionHtml.replace(/<[^>]+>/g, '').substring(0, 160);
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoman.store'}/products/${product.handle}`;
+  const imageUrl = product.images?.[0]?.url || '';
+
   return {
-    title: `${product.seo.title || product.title} | Cocoman`,
-    description: product.seo.description || product.descriptionHtml.replace(/<[^>]+>/g, '').substring(0, 160),
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      images: imageUrl ? [{ url: imageUrl, width: 800, height: 800 }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: imageUrl ? [imageUrl] : [],
+    },
   };
 }
 
@@ -45,8 +65,33 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
     count: reviewCount
   };
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    description: product.seo?.description || product.descriptionHtml.replace(/<[^>]+>/g, '').substring(0, 160),
+    image: product.images?.[0]?.url,
+    offers: {
+      '@type': 'Offer',
+      availability: product.availableForSale ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      price: product.price,
+      priceCurrency: product.currencyCode,
+    },
+    ...(reviewCount > 0 && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: reviewAverage.toFixed(1),
+        reviewCount: reviewCount,
+      }
+    }),
+  };
+
   return (
     <main className="min-h-screen bg-warm-off-white font-sans text-jet-black flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="flex flex-col md:flex-row gap-12 lg:gap-24 px-6 md:px-12 py-12 lg:py-24 max-w-[1600px] mx-auto w-full">
         {/* Gallery */}
         <div className="w-full md:w-3/5 lg:w-2/3">

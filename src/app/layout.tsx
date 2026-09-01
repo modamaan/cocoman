@@ -21,11 +21,28 @@ const cardo = Cardo({
   weight: ["400", "700"],
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoman.store';
+
 export const metadata: Metadata = {
-  title: "Cocoman - Wear What Feels Like You",
+  metadataBase: new URL(baseUrl),
+  title: {
+    template: '%s | Cocoman',
+    default: "Cocoman - Wear What Feels Like You",
+  },
   description: "Premium streetwear storefront",
   icons: {
     icon: "/cocoman_favicon.png",
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'Cocoman',
+    title: 'Cocoman - Wear What Feels Like You',
+    description: 'Premium streetwear storefront',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Cocoman - Wear What Feels Like You',
+    description: 'Premium streetwear storefront',
   },
 };
 

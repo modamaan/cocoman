@@ -6,6 +6,37 @@ import { FilterLayout } from '@/components/product/FilterLayout';
 
 export const dynamic = 'force-dynamic';
 
+export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }) {
+  const resolvedParams = await params;
+  const collection = await getCollectionProducts(resolvedParams.handle);
+  if (!collection) return {};
+
+  const title = collection.seo?.title || collection.title;
+  const description = collection.seo?.description || collection.description || '';
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoman.store'}/collections/${resolvedParams.handle}`;
+  const imageUrl = collection.image?.url || '';
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630 }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: imageUrl ? [imageUrl] : [],
+    },
+  };
+}
+
 export default async function CollectionPage({
   params,
   searchParams,

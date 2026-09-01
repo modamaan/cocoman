@@ -4,6 +4,10 @@ export const getCollectionProductsQueryV2 = /* GraphQL */ `
       id
       title
       description
+      seo {
+        title
+        description
+      }
       image {
         url
         altText

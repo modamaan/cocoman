@@ -3,6 +3,13 @@ import { DiscoverCollections } from "@/components/home/DiscoverCollections";
 import { DynamicCollections } from "@/components/home/DynamicCollections";
 import { PromoCountdown } from "@/components/home/PromoCountdown";
 import { InstagramFeed } from "@/components/home/InstagramFeed";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoman.store',
+  }
+};
 
 export default function Home() {
   return (

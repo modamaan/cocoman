@@ -22,14 +22,17 @@ export async function shopifyFetch<T>({
 }): Promise<{ status: number; body: T } | never> {
   const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN;
   // We use NEXT_PUBLIC_ here so the token can be used for client-side fetching (e.g. live cart updates) if needed.
-  const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+  let token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+  if (token) {
+    token = token.replace(/['"]/g, '');
+  }
 
   if (!domain || !token || token === 'YOUR_STOREFRONT_ACCESS_TOKEN_HERE') {
     throw new Error('Shopify credentials missing. Check .env.local');
   }
 
   // Robustly handle domain string in case 'https://' was accidentally included in the env variable
-  const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '').replace(/['"]/g, '');
   const endpoint = `https://${cleanDomain}/api/2024-01/graphql.json`;
 
   try {
@@ -275,6 +278,7 @@ export type CollectionWithProducts = {
   id: string;
   title: string;
   description: string;
+  seo?: { title?: string; description?: string };
   image?: { url: string; altText: string; width: number; height: number };
   products: Product[];
   availableFilters?: Filter[];
@@ -317,6 +321,7 @@ export async function getCollectionProducts(
       id: collection.id,
       title: collection.title,
       description: collection.description,
+      seo: collection.seo,
       image: collection.image,
       products,
       availableFilters: collection.products.filters
