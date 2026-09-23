@@ -141,9 +141,18 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
 
           // Normalize Shopify page links for our custom routes
           let finalUrl = item.url || '#';
-          if (finalUrl === '/pages/about') {
+          try {
+            const urlObj = new URL(finalUrl);
+            finalUrl = urlObj.pathname;
+          } catch (e) {
+            // If it's already a relative path, ignore
+          }
+
+          if (finalUrl === '/' || finalUrl === '') {
+            finalUrl = '/';
+          } else if (finalUrl.includes('/pages/about')) {
             finalUrl = '/about';
-          } else if (finalUrl === '/pages/contact') {
+          } else if (finalUrl.includes('/pages/contact')) {
             finalUrl = '/contact';
           }
 
@@ -223,9 +232,16 @@ export function Header({ menuItems, collections = [], cart = null }: { menuItems
               }
 
               let finalUrl = item.url || '#';
-              if (finalUrl === '/pages/about' || finalUrl === '/pages/about-us') {
+              try {
+                const urlObj = new URL(finalUrl);
+                finalUrl = urlObj.pathname;
+              } catch (e) {}
+
+              if (finalUrl === '/' || finalUrl === '') {
+                finalUrl = '/';
+              } else if (finalUrl.includes('/pages/about')) {
                 finalUrl = '/about';
-              } else if (finalUrl === '/pages/contact' || finalUrl === '/pages/contact-us') {
+              } else if (finalUrl.includes('/pages/contact')) {
                 finalUrl = '/contact';
               }
 
