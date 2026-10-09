@@ -39,7 +39,7 @@ export async function DiscoverCollections() {
   ];
 
   return (
-    <section className="bg-warm-off-white text-jet-black py-20 px-4 md:px-16 w-full">
+    <section className="bg-warm-off-white text-jet-black py-20 px-4 md:px-8 lg:px-10 w-full">
       {/* Header */}
       <div className="flex justify-between items-end mb-16">
         <h2 className="text-lg md:text-3xl font-serif font-bold uppercase tracking-tight">
@@ -57,12 +57,12 @@ export async function DiscoverCollections() {
       </div>
 
       {/* Scrollable Container */}
-      <div className="flex overflow-x-auto gap-4 md:gap-6 lg:gap-8 lg:justify-between pb-8 snap-x snap-mandatory w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="flex overflow-x-auto gap-4 md:gap-6 lg:gap-8 pb-8 snap-x snap-mandatory w-full lg:w-max lg:mx-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {displayCollections.map((collection) => (
           <Link 
             key={collection.id} 
             href={collection.url}
-            className="group flex flex-col items-center gap-4 md:gap-6 w-[135px] sm:w-[160px] md:min-w-[180px] md:flex-1 lg:max-w-[260px] shrink-0 snap-start md:snap-center"
+            className="group flex flex-col items-center gap-4 md:gap-6 w-[135px] sm:w-[160px] md:w-[200px] lg:w-[220px] shrink-0 snap-start md:snap-center"
           >
             {/* Pill shaped container */}
             <div className="w-full aspect-[1/2] rounded-[100px] overflow-hidden bg-soft-ivory relative flex items-center justify-center">
