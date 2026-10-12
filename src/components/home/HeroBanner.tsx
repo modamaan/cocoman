@@ -7,8 +7,7 @@ export function HeroBanner() {
     {
       id: 'hero-1',
       ultraLargeImage: { url: '/ultra_large_coco.png', altText: "Men's Collection", width: 1672, height: 941 },
-      image: { url: '/large_coco.png', altText: "Men's Collection", width: 1672, height: 940 },
-      mobileImage: { url: '/mobile_coco.png', altText: "Men's Collection", width: 941, height: 1672 },
+      mobileImage: { url: '/mobile_coco_1.png', altText: "Men's Collection", width: 941, height: 1672 },
       buttonLink: '/collections/all-products'
     }
   ];

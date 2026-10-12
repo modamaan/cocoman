@@ -35,26 +35,28 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
               playsInline
               className="object-cover w-full h-full"
             />
-          ) : slide.image ? (
+          ) : (slide.image || slide.ultraLargeImage) ? (
             <>
               {/* Mobile Image */}
               <img
-                src={slide.mobileImage?.url || slide.image.url}
-                alt={slide.mobileImage?.altText || slide.image.altText || 'Hero background'}
+                src={slide.mobileImage?.url || slide.ultraLargeImage?.url || slide.image?.url}
+                alt={slide.mobileImage?.altText || slide.ultraLargeImage?.altText || slide.image?.altText || 'Hero background'}
                 className="block md:hidden object-cover object-[center_top] w-full h-full"
               />
               {/* Standard Desktop / Laptop Image */}
-              <img
-                src={slide.image.url}
-                alt={slide.image.altText || 'Hero background'}
-                className={`hidden md:block ${slide.ultraLargeImage ? 'xl:hidden' : ''} object-cover object-center w-full h-full`}
-              />
-              {/* Bigger Monitors (≥ 1280px) */}
+              {slide.image && (
+                <img
+                  src={slide.image.url}
+                  alt={slide.image.altText || 'Hero background'}
+                  className={`hidden md:block ${slide.ultraLargeImage ? 'xl:hidden' : ''} object-cover object-center w-full h-full`}
+                />
+              )}
+              {/* Bigger Monitors / Primary Desktop Image */}
               {slide.ultraLargeImage && (
                 <img
                   src={slide.ultraLargeImage.url}
-                  alt={slide.ultraLargeImage.altText || slide.image.altText || 'Hero background'}
-                  className="hidden xl:block object-cover object-center w-full h-full"
+                  alt={slide.ultraLargeImage.altText || slide.image?.altText || 'Hero background'}
+                  className={`hidden ${slide.image ? 'xl:block' : 'md:block'} object-cover object-center w-full h-full`}
                 />
               )}
             </>
