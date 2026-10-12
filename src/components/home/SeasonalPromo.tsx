@@ -31,7 +31,7 @@ export function SeasonalPromo() {
             </h2>
 
             <p className="font-sans text-[11px] sm:text-xs md:text-sm text-dark-gray/80 mt-2 sm:mt-3 max-w-[200px] sm:max-w-xs md:max-w-md font-light leading-relaxed">
-              Elevated streetwear essentials engineered for modern living.
+              Elevated streetwear essentials engineered for modern livings.
             </p>
 
             <Link
