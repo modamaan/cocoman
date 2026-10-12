@@ -140,8 +140,8 @@ export async function shopifyFetch<T>({
     if (isDynamicServerError(e)) throw e;
 
     // Check if error is DNS failure or connection timeout (common on local ISP DNS/IPv6 issues)
-    const isNetworkOrDnsError = 
-      e?.cause?.code === 'ENOTFOUND' || 
+    const isNetworkOrDnsError =
+      e?.cause?.code === 'ENOTFOUND' ||
       e?.cause?.code === 'UND_ERR_CONNECT_TIMEOUT' ||
       e?.message?.includes('fetch failed') ||
       e?.code === 'ENOTFOUND';
@@ -194,7 +194,7 @@ export async function getCollections(): Promise<Collection[]> {
   } catch (error) {
     if (isDynamicServerError(error)) throw error;
     console.warn('⚠️ Shopify credentials missing or invalid. Falling back to mock data for collections.');
-    
+
     // Fallback Mock Data
     return [
       {
@@ -249,12 +249,12 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
     });
 
     const edges = res.body?.metaobjects?.edges || [];
-    
+
     return edges.map((edge: any) => {
       const fields = edge.node.fields;
-      
+
       const slide: HeroSlide = { id: edge.node.id };
-      
+
       for (const field of fields) {
         if (field.key === 'button_link') {
           slide.buttonLink = field.value;
@@ -271,7 +271,7 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
           slide.video = mp4 || field.reference.sources[0];
         }
       }
-      
+
       return slide;
     });
   } catch (error) {
@@ -295,30 +295,51 @@ function parseMenuUrls(items: any[], domain: string): MenuItem[] {
 
     try {
       const parsed = new URL(originalUrl);
-      
+
       // Security: Strictly allow only HTTP and HTTPS protocols for absolute URLs
       if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
         console.warn(`⚠️ Blocked unsafe protocol in menu URL: ${originalUrl}`);
         finalUrl = '#';
-      } 
-      // If the URL points to our Shopify backend, convert it to a local relative path
-      else if (parsed.hostname.includes(domain) || parsed.hostname.includes('myshopify.com')) {
-        // Preserve query parameters and fragments (e.g. /collections/all?sort=price#top)
-        finalUrl = `${parsed.pathname}${parsed.search}${parsed.hash}`;
-      } 
+      }
+      // If the URL points to our Shopify backend or store domains, convert it to a local relative path
+      else if (
+        (domain && parsed.hostname.includes(domain)) ||
+        parsed.hostname.includes('myshopify.com') ||
+        parsed.hostname.includes('cocoman.store') ||
+        parsed.pathname.startsWith('/collections') ||
+        parsed.pathname.startsWith('/products') ||
+        parsed.pathname.startsWith('/pages') ||
+        parsed.pathname.startsWith('/blogs') ||
+        parsed.pathname.startsWith('/policies')
+      ) {
+        // Strip /pages/ prefix for custom Next.js pages like /about, /contact
+        if (parsed.pathname === '/pages/about') {
+          finalUrl = '/about';
+        } else if (parsed.pathname === '/pages/contact') {
+          finalUrl = '/contact';
+        } else {
+          finalUrl = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+        }
+      }
       // Otherwise, it's a safe external link (e.g., Instagram, Twitter)
       else {
         finalUrl = originalUrl;
       }
     } catch (e) {
-    if (isDynamicServerError(e)) throw e;
+      if (isDynamicServerError(e)) throw e;
       // If URL parsing fails, it might already be a relative path.
       // Security: Ensure it starts with '/' to prevent javascript: or relative path traversal injections.
       if (originalUrl.startsWith('/')) {
-        finalUrl = originalUrl;
+        if (originalUrl === '/pages/about') {
+          finalUrl = '/about';
+        } else if (originalUrl === '/pages/contact') {
+          finalUrl = '/contact';
+        } else {
+          finalUrl = originalUrl;
+        }
       }
     }
-    
+
     return {
       id: item.id,
       title: item.title,
@@ -340,7 +361,7 @@ export async function getMenu(handle: string): Promise<MenuItem[]> {
     const items = res.body?.menu?.items || [];
     const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || '';
     const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '');
-    
+
     return parseMenuUrls(items, cleanDomain);
   } catch (error) {
     if (isDynamicServerError(error)) throw error;
@@ -416,7 +437,7 @@ export async function getCollectionProducts(
         hoverImage: images[1]
       };
     });
-    
+
     return {
       id: collection.id,
       title: collection.title,
@@ -515,18 +536,18 @@ export async function getInstagramPosts(): Promise<InstagramPost[]> {
     });
 
     const edges = res.body?.metaobjects?.edges || [];
-    
+
     return edges.map((edge: any) => {
       const fields = edge.node.fields;
-      
-      const post: InstagramPost = { 
+
+      const post: InstagramPost = {
         id: edge.node.id,
         link: null,
         mediaType: null,
         image: null,
         videoUrl: null
       };
-      
+
       for (const field of fields) {
         if (field.key === 'link') post.link = field.value;
         if (field.key === 'media_type') post.mediaType = field.value;
@@ -536,7 +557,7 @@ export async function getInstagramPosts(): Promise<InstagramPost[]> {
           if (mp4) post.videoUrl = mp4.url;
         }
       }
-      
+
       return post;
     });
   } catch (error) {
@@ -730,7 +751,7 @@ export async function getProducts(query: string): Promise<Product[]> {
     return edges.map((edge: any) => {
       const node = edge.node;
       const images = node.images?.edges?.map((i: any) => i.node) || [];
-      
+
       return {
         id: node.id,
         title: node.title,
