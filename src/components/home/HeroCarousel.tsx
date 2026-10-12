@@ -19,13 +19,12 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
   if (!slides || slides.length === 0) return null;
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full h-full overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-          }`}
+          className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            }`}
         >
           {slide.video ? (
             <video
@@ -34,14 +33,31 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
               loop
               muted
               playsInline
-              className="object-cover w-full h-full opacity-60"
+              className="object-cover w-full h-full"
             />
           ) : slide.image ? (
-            <img
-              src={slide.image.url}
-              alt={slide.image.altText || 'Hero background'}
-              className="object-cover w-full h-full opacity-60"
-            />
+            <>
+              {/* Mobile Image */}
+              <img
+                src={slide.mobileImage?.url || slide.image.url}
+                alt={slide.mobileImage?.altText || slide.image.altText || 'Hero background'}
+                className="block md:hidden object-cover object-[center_top] w-full h-full"
+              />
+              {/* Standard Desktop / Laptop Image */}
+              <img
+                src={slide.image.url}
+                alt={slide.image.altText || 'Hero background'}
+                className={`hidden md:block ${slide.ultraLargeImage ? 'xl:hidden' : ''} object-cover object-center w-full h-full`}
+              />
+              {/* Bigger Monitors (≥ 1280px) */}
+              {slide.ultraLargeImage && (
+                <img
+                  src={slide.ultraLargeImage.url}
+                  alt={slide.ultraLargeImage.altText || slide.image.altText || 'Hero background'}
+                  className="hidden xl:block object-cover object-center w-full h-full"
+                />
+              )}
+            </>
           ) : (
             <div className="w-full h-full bg-jet-black opacity-60" />
           )}
@@ -49,18 +65,20 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
       ))}
 
       {/* Pagination / Controls overlay */}
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-4 text-xs font-sans tracking-widest text-pure-white/50">
-        <span className="text-pure-white">{String(currentSlide + 1).padStart(2, '0')}</span>
-        <div className="h-24 w-[1px] bg-pure-white/20 relative">
-          <div 
-            className="absolute top-0 left-0 w-full bg-pure-white transition-all duration-1000"
-            style={{ 
-              height: `${((currentSlide + 1) / slides.length) * 100}%` 
-            }}
-          />
+      {slides.length > 1 && (
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-4 text-xs font-sans tracking-widest text-pure-white/50">
+          <span className="text-pure-white">{String(currentSlide + 1).padStart(2, '0')}</span>
+          <div className="h-24 w-[1px] bg-pure-white/20 relative">
+            <div
+              className="absolute top-0 left-0 w-full bg-pure-white transition-all duration-1000"
+              style={{
+                height: `${((currentSlide + 1) / slides.length) * 100}%`
+              }}
+            />
+          </div>
+          <span>{String(slides.length).padStart(2, '0')}</span>
         </div>
-        <span>{String(slides.length).padStart(2, '0')}</span>
-      </div>
+      )}
     </div>
   );
 }

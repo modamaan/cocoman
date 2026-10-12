@@ -139,6 +139,8 @@ export async function getCollections(): Promise<Collection[]> {
 export type HeroSlide = {
   id: string;
   image?: { url: string; altText: string; width: number; height: number };
+  mobileImage?: { url: string; altText: string; width: number; height: number };
+  ultraLargeImage?: { url: string; altText: string; width: number; height: number };
   video?: { url: string; mimeType: string };
   buttonLink?: string;
 };
@@ -164,6 +166,9 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
         }
         if (field.key === 'image' && field.reference?.image) {
           slide.image = field.reference.image;
+        }
+        if (field.key === 'mobile_image' && field.reference?.image) {
+          slide.mobileImage = field.reference.image;
         }
         if (field.key === 'video' && field.reference?.sources) {
           // Find MP4 or fallback to first source
