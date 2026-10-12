@@ -14,7 +14,7 @@ export function HeroBanner() {
   ];
 
   return (
-    <section className="relative w-full overflow-hidden bg-jet-black h-[85vh] md:h-auto md:aspect-[1672/940]">
+    <section className="relative w-full overflow-hidden bg-jet-black h-[65vh] sm:h-[70vh] md:h-auto md:aspect-[1672/940]">
       {/* Background Media */}
       <div className="absolute inset-0 w-full h-full">
         <HeroCarousel slides={activeSlides} />
