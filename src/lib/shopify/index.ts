@@ -9,6 +9,82 @@ type GraphQLResponse<T> = {
   errors?: Array<{ message: string }>;
 };
 
+async function shopifyNetworkFallback<T>({
+  cleanDomain,
+  token,
+  query,
+  variables
+}: {
+  cleanDomain: string;
+  token: string;
+  query: string;
+  variables: Record<string, any>;
+}): Promise<{ status: number; body: T }> {
+  const https = await import('node:https');
+  const { Resolver } = await import('node:dns/promises');
+
+  let ip = '23.227.38.74'; // Shopify global edge Anycast IP
+  try {
+    const resolver = new Resolver();
+    resolver.setServers(['8.8.8.8', '1.1.1.1']);
+    const ips = await resolver.resolve4(cleanDomain);
+    if (ips && ips.length > 0) {
+      ip = ips[0];
+    }
+  } catch {
+    // Fall back to Anycast IP
+  }
+
+  return new Promise((resolve, reject) => {
+    const payload = JSON.stringify({
+      ...(query && { query }),
+      ...(variables && { variables })
+    });
+
+    const req = https.request({
+      host: ip,
+      port: 443,
+      path: '/api/2024-01/graphql.json',
+      method: 'POST',
+      headers: {
+        'Host': cleanDomain,
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': token,
+        'Content-Length': Buffer.byteLength(payload)
+      },
+      servername: cleanDomain,
+      timeout: 10000
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => { data += chunk; });
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data) as GraphQLResponse<T>;
+          if (parsed.errors) {
+            reject(parsed.errors[0]);
+          } else {
+            resolve({
+              status: res.statusCode || 200,
+              body: parsed.data
+            });
+          }
+        } catch (jsonErr) {
+          reject(jsonErr);
+        }
+      });
+    });
+
+    req.on('error', reject);
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error('Shopify fallback connection timed out'));
+    });
+
+    req.write(payload);
+    req.end();
+  });
+}
+
 export async function shopifyFetch<T>({
   query,
   variables = {},
@@ -60,8 +136,27 @@ export async function shopifyFetch<T>({
       status: result.status,
       body: body.data,
     };
-  } catch (e) {
+  } catch (e: any) {
     if (isDynamicServerError(e)) throw e;
+
+    // Check if error is DNS failure or connection timeout (common on local ISP DNS/IPv6 issues)
+    const isNetworkOrDnsError = 
+      e?.cause?.code === 'ENOTFOUND' || 
+      e?.cause?.code === 'UND_ERR_CONNECT_TIMEOUT' ||
+      e?.message?.includes('fetch failed') ||
+      e?.code === 'ENOTFOUND';
+
+    if (isNetworkOrDnsError && typeof window === 'undefined') {
+      try {
+        return await shopifyNetworkFallback<T>({ cleanDomain, token, query, variables });
+      } catch (fallbackError) {
+        throw {
+          error: fallbackError,
+          query,
+        };
+      }
+    }
+
     throw {
       error: e,
       query,

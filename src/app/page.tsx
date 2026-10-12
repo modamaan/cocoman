@@ -1,5 +1,6 @@
 import { HeroBanner } from "@/components/home/HeroBanner";
 import { DiscoverCollections } from "@/components/home/DiscoverCollections";
+import { SeasonalPromo } from "@/components/home/SeasonalPromo";
 import { DynamicCollections } from "@/components/home/DynamicCollections";
 import { PromoCountdown } from "@/components/home/PromoCountdown";
 import { InstagramFeed } from "@/components/home/InstagramFeed";
@@ -17,24 +18,8 @@ export default function Home() {
       <HeroBanner />
       <DiscoverCollections />
 
-      {/* Bottom Promo Section */}
-      <div className="relative block w-full bg-jet-black border-t border-pure-white/10">
-        {/* On desktop we can keep the fixed height, on mobile we use full viewport height */}
-        <div className="w-full h-[80dvh] md:h-[90vh]">
-          {/* Mobile Image */}
-          <img
-            src="/coco_bg.png"
-            alt="Men's collection"
-            className="block md:hidden object-cover object-center w-full h-full"
-          />
-          {/* Desktop Image */}
-          <img
-            src="/hero_2.png"
-            alt="Men's collection"
-            className="hidden md:block object-cover object-center w-full h-full"
-          />
-        </div>
-      </div>
+      {/* Seasonal Promo Split Section */}
+      <SeasonalPromo />
 
       <DynamicCollections />
 
