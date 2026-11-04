@@ -47,65 +47,88 @@ export async function DiscoverCollections() {
   ];
 
   return (
-    <section className="bg-warm-off-white text-jet-black py-20 px-4 md:px-8 lg:px-10 w-full">
-      {/* Header */}
-      <div className="flex justify-between items-end mb-16">
-        <h2 className="text-lg md:text-3xl font-serif font-bold uppercase tracking-tight">
-          DISCOVER THE COLLECTIONS
-        </h2>
-        <Link
-          href="/collections/all-products"
-          className="hidden md:flex items-center gap-2 text-xs font-semibold tracking-wider uppercase hover:opacity-70 transition-opacity"
-        >
-          VIEW ALL
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-        </Link>
-      </div>
-
-      {/* Scrollable Container */}
-      <div className="flex overflow-x-auto gap-4 md:gap-6 lg:gap-8 pb-8 snap-x snap-mandatory w-full lg:w-max lg:mx-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        {displayCollections.map((collection) => (
+    <section className="bg-warm-off-white text-jet-black py-16 md:py-24 px-4 md:px-8 lg:px-12 w-full">
+      <div className="max-w-[1600px] mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-end mb-10 md:mb-14">
+          <h2 className="text-xl md:text-3xl font-serif font-bold uppercase tracking-tight">
+            DISCOVER THE COLLECTIONS
+          </h2>
           <Link
-            key={collection.id}
-            href={collection.url}
-            className="group flex flex-col items-center gap-4 md:gap-6 w-[135px] sm:w-[160px] md:w-[200px] lg:w-[220px] shrink-0 snap-start md:snap-center"
+            href="/collections/all-products"
+            className="hidden md:flex items-center gap-2 text-xs font-semibold tracking-wider uppercase hover:opacity-70 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-jet-black"
           >
-            {/* Pill shaped container */}
-            <div className="w-full aspect-[1/2] rounded-[100px] overflow-hidden bg-soft-ivory relative flex items-center justify-center">
-              {collection.image ? (
-                <img
-                  src={collection.image.url}
-                  alt={collection.image.altText || collection.title}
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-              ) : (
-                <span className="text-xs font-sans font-medium text-jet-black/30 text-center px-4 uppercase tracking-widest">
-                  Coming Soon
-                </span>
-              )}
-              {/* Overlay for hover effect */}
-              <div className="absolute inset-0 bg-jet-black/0 group-hover:bg-jet-black/10 transition-colors duration-300"></div>
-            </div>
-
-            <h3 className="text-sm font-sans font-bold tracking-widest uppercase text-center">
-              {collection.title}
-            </h3>
+            VIEW ALL
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </Link>
-        ))}
-      </div>
+        </div>
 
-      <div className="mt-12 flex justify-center md:hidden">
-        <Link
-          href="/collections/all-products"
-          className="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase border border-jet-black/20 px-6 py-3"
-        >
-          VIEW ALL
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-        </Link>
+        {/* Scrollable Card Container */}
+        <div className="flex overflow-x-auto gap-4 md:gap-6 lg:gap-8 pb-6 snap-x snap-mandatory w-full lg:w-max lg:mx-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {displayCollections.map((collection) => (
+            <Link
+              key={collection.id}
+              href={collection.url}
+              aria-label={`Explore ${collection.title} collection`}
+              className="group flex flex-col w-[220px] sm:w-[260px] md:w-[280px] lg:w-[320px] shrink-0 snap-start focus:outline-none focus-visible:ring-2 focus-visible:ring-jet-black focus-visible:ring-offset-4 focus-visible:ring-offset-warm-off-white transition-opacity"
+            >
+              {/* Card container */}
+              <div className="w-full aspect-[4/5] overflow-hidden bg-soft-ivory border border-jet-black/10 relative flex items-center justify-center">
+                {collection.image ? (
+                  <img
+                    src={collection.image.url}
+                    alt={collection.image.altText || collection.title}
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="text-xs font-sans font-medium text-jet-black/30 text-center px-4 uppercase tracking-widest">
+                    Coming Soon
+                  </span>
+                )}
+                {/* Subtle hover overlay */}
+                <div className="absolute inset-0 bg-jet-black/0 group-hover:bg-jet-black/10 transition-colors duration-300" aria-hidden="true" />
+              </div>
+
+              {/* Card caption */}
+              <div className="flex items-center justify-between gap-2 mt-4 px-0.5">
+                <h3 className="text-xs sm:text-sm font-sans font-bold tracking-[0.16em] uppercase text-jet-black group-hover:opacity-75 transition-opacity">
+                  {collection.title}
+                </h3>
+                <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-wider uppercase text-jet-black/60 group-hover:text-jet-black transition-colors flex items-center gap-1 shrink-0">
+                  EXPLORE
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="group-hover:translate-x-0.5 transition-transform duration-200"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Mobile View All button */}
+        <div className="mt-8 flex justify-center md:hidden">
+          <Link
+            href="/collections/all-products"
+            className="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase border border-jet-black/20 px-6 py-3 hover:bg-jet-black hover:text-pure-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-jet-black"
+          >
+            VIEW ALL
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
       </div>
     </section>
   );

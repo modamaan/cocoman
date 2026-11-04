@@ -160,32 +160,39 @@ function FilterLayoutInner({ children, availableFilters = [] }: { children: Reac
   return (
     <div className="w-full flex flex-col gap-6" suppressHydrationWarning>
       {/* Top Bar: Filters Toggle & Sort */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4 w-full">
         {availableFilters?.length > 0 && (
           <button 
             suppressHydrationWarning
+            type="button"
             onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-            className="flex items-center justify-center border border-jet-black/20 hover:border-jet-black px-6 py-2.5 text-sm font-sans transition-colors min-w-[120px]"
+            className="flex-1 sm:flex-initial h-10 sm:h-11 flex items-center justify-center border border-jet-black/20 hover:border-jet-black px-3 sm:px-6 text-xs sm:text-sm font-sans transition-colors whitespace-nowrap min-w-0 sm:min-w-[120px] focus:outline-none focus-visible:ring-1 focus-visible:ring-jet-black"
           >
-            {isFiltersOpen ? 'Hide Filters' : 'Filters'}
+            <span>{isFiltersOpen ? 'Hide Filters' : 'Filters'}</span>
             {activeFiltersCount > 0 && (
-              <span className="ml-2 bg-jet-black text-pure-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+              <span className="ml-2 bg-jet-black text-pure-white text-[10px] w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full shrink-0">
                 {activeFiltersCount}
               </span>
             )}
           </button>
         )}
 
-        <div className="relative">
+        <div className="relative flex-1 sm:flex-initial min-w-0">
           <button 
             suppressHydrationWarning
+            type="button"
             onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); }}
-            className="flex items-center justify-between border border-jet-black/20 hover:border-jet-black px-6 py-2.5 text-sm font-sans transition-colors min-w-[140px]"
+            className="w-full h-10 sm:h-11 flex items-center justify-between border border-jet-black/20 hover:border-jet-black px-3 sm:px-5 text-xs sm:text-sm font-sans transition-colors min-w-0 sm:min-w-[160px] focus:outline-none focus-visible:ring-1 focus-visible:ring-jet-black"
+            aria-haspopup="listbox"
+            aria-expanded={isSortOpen}
           >
-            {currentSortLabel}
+            <span className="truncate text-left mr-2">
+              {currentSortLabel}
+            </span>
             <svg 
-              className={`w-3 h-3 ml-3 transition-transform duration-200 opacity-60 ${isSortOpen ? 'rotate-180' : ''}`} 
+              className={`w-3 h-3 shrink-0 transition-transform duration-200 opacity-60 ${isSortOpen ? 'rotate-180' : ''}`} 
               fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
+              aria-hidden="true"
             >
               <path d="M19 9l-7 7-7-7" />
             </svg>
@@ -193,14 +200,24 @@ function FilterLayoutInner({ children, availableFilters = [] }: { children: Reac
           
           {/* Sort Dropdown */}
           {isSortOpen && (
-            <div className="absolute top-full left-0 mt-2 w-full min-w-[200px] bg-warm-off-white border border-jet-black/10 shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
+            <div 
+              role="listbox"
+              className="absolute top-full right-0 mt-1 sm:mt-2 w-full min-w-[180px] sm:min-w-[200px] max-w-[calc(100vw-2rem)] bg-warm-off-white border border-jet-black/10 shadow-xl z-50 py-1.5 sm:py-2 animate-in fade-in slide-in-from-top-2"
+            >
               {sortOptions.map(option => (
                 <button
                   key={option.value}
+                  role="option"
+                  aria-selected={currentSortValue === option.value}
                   onClick={() => updateSort(option.value)}
-                  className={`w-full text-left px-4 py-2.5 text-sm font-sans hover:bg-jet-black/5 ${currentSortValue === option.value ? 'font-bold' : ''}`}
+                  className={`w-full text-left px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-sans hover:bg-jet-black/5 flex items-center justify-between transition-colors whitespace-nowrap ${currentSortValue === option.value ? 'font-bold bg-jet-black/5' : ''}`}
                 >
-                  {option.label}
+                  <span>{option.label}</span>
+                  {currentSortValue === option.value && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="ml-2 shrink-0" aria-hidden="true">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                  )}
                 </button>
               ))}
             </div>

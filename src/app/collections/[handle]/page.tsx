@@ -86,7 +86,7 @@ export default async function CollectionPage({
   return (
     <div className="bg-warm-off-white text-jet-black min-h-screen pt-12 md:pt-20 pb-24">
       {/* Collection Header */}
-      <header className="px-6 md:px-12 mb-8 md:mb-12 max-w-7xl mx-auto text-center flex flex-col items-center">
+      <header className="px-4 sm:px-6 md:px-12 mb-8 md:mb-12 max-w-7xl mx-auto text-center flex flex-col items-center">
         <h1 className="text-3xl md:text-4xl font-serif mb-4 uppercase tracking-tight">
           {collection.title}
         </h1>
@@ -101,7 +101,7 @@ export default async function CollectionPage({
       </header>
 
       {/* Main Content Area */}
-      <div className="px-6 md:px-12 max-w-[1600px] mx-auto">
+      <div className="px-4 sm:px-6 md:px-12 max-w-[1600px] mx-auto">
         <FilterLayout availableFilters={collection.availableFilters || []}>
           {collection.products.length === 0 ? (
             <div className="py-20 text-center flex flex-col items-center">
