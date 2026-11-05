@@ -46,18 +46,18 @@ export default async function CollectionPage({
 }) {
   const { handle } = await params;
   const searchParamsResolved = await searchParams;
-  
+
   // Extract sort/filter params
   const sortKey = typeof searchParamsResolved.sort === 'string' ? searchParamsResolved.sort : 'COLLECTION_DEFAULT';
   const reverse = searchParamsResolved.reverse === 'true';
 
   // Construct Shopify ProductFilters
   const filters: any[] = [];
-  
+
   if (searchParamsResolved.available === 'true') {
     filters.push({ available: true });
   }
-  
+
   if (searchParamsResolved.minPrice || searchParamsResolved.maxPrice) {
     const priceFilter: any = {};
     if (searchParamsResolved.minPrice) priceFilter.min = parseFloat(searchParamsResolved.minPrice as string);
