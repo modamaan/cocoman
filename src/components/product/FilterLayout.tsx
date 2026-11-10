@@ -177,12 +177,12 @@ function FilterLayoutInner({ children, availableFilters = [] }: { children: Reac
           </button>
         )}
 
-        <div className="relative flex-1 sm:flex-initial min-w-0">
+        <div className="relative flex-1 sm:flex-initial min-w-0 sm:min-w-[160px]">
           <button 
             suppressHydrationWarning
             type="button"
             onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); }}
-            className="w-full h-10 sm:h-11 flex items-center justify-between border border-jet-black/20 hover:border-jet-black px-3 sm:px-5 text-xs sm:text-sm font-sans transition-colors min-w-0 sm:min-w-[160px] focus:outline-none focus-visible:ring-1 focus-visible:ring-jet-black"
+            className="w-full h-10 sm:h-11 flex items-center justify-between border border-jet-black/20 hover:border-jet-black px-3 sm:px-5 text-xs sm:text-sm font-sans transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-jet-black"
             aria-haspopup="listbox"
             aria-expanded={isSortOpen}
           >
@@ -198,11 +198,11 @@ function FilterLayoutInner({ children, availableFilters = [] }: { children: Reac
             </svg>
           </button>
           
-          {/* Sort Dropdown */}
+          {/* Sort Dropdown — anchored to button, constrained within viewport */}
           {isSortOpen && (
             <div 
               role="listbox"
-              className="absolute top-full right-0 mt-1 sm:mt-2 w-full min-w-[180px] sm:min-w-[200px] max-w-[calc(100vw-2rem)] bg-warm-off-white border border-jet-black/10 shadow-xl z-50 py-1.5 sm:py-2 animate-in fade-in slide-in-from-top-2"
+              className="absolute top-full right-0 mt-1 sm:mt-2 min-w-full sm:min-w-[200px] w-max max-w-[min(240px,calc(100vw-2rem))] bg-warm-off-white border border-jet-black/10 shadow-xl z-50 py-1.5 sm:py-2 animate-in fade-in slide-in-from-top-2"
             >
               {sortOptions.map(option => (
                 <button

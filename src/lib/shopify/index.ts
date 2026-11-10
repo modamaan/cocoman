@@ -904,3 +904,457 @@ export async function recoverCustomerPassword(email: string): Promise<boolean> {
     return false;
   }
 }
+
+// ==========================================
+// SHOP THE LOOK / 3D LOOKBOOK
+// ==========================================
+
+export type LookbookProduct = {
+  id: string;
+  title: string;
+  handle: string;
+  price: string;
+  currencyCode: string;
+  featuredImage?: { url: string; altText?: string };
+  variantId?: string;
+  availableForSale: boolean;
+};
+
+export type Hotspot = {
+  id: string;
+  x: number; // Percentage from left (0 - 100)
+  y: number; // Percentage from top (0 - 100)
+  label: string;
+  productId: string;
+};
+
+export type LookbookLook = {
+  id: string;
+  title: string;
+  subCaption: string;
+  modelImage: { url: string; altText?: string; width?: number; height?: number };
+  products: LookbookProduct[];
+  hotspots: Hotspot[];
+};
+
+export async function getShopTheLookLooks(): Promise<LookbookLook[]> {
+  try {
+    const { getShopTheLookQuery } = await import('./queries/lookbook');
+    const res = await shopifyFetch<any>({
+      query: getShopTheLookQuery,
+      tags: ['shop_the_look'],
+      cache: 'no-store'
+    });
+
+    const edges = res.body?.metaobjects?.edges || [];
+    if (edges.length > 0) {
+      const parsedLooks: LookbookLook[] = [];
+
+      for (const edge of edges) {
+        const fields = edge.node.fields;
+        let title = 'Look';
+        let subCaption = '';
+        let modelImage: any = null;
+        const products: LookbookProduct[] = [];
+        let hotspots: Hotspot[] = [];
+
+        for (const field of fields) {
+          if (field.key === 'title') title = field.value;
+          if (field.key === 'sub_caption') subCaption = field.value;
+          if (field.key === 'model_image' && field.reference?.image) {
+            modelImage = field.reference.image;
+          }
+          if (field.key === 'products' && field.references?.edges) {
+            for (const pEdge of field.references.edges) {
+              const p = pEdge.node;
+              if (p && p.id) {
+                const firstVariant = p.variants?.edges?.[0]?.node;
+                products.push({
+                  id: p.id,
+                  title: p.title,
+                  handle: p.handle,
+                  price: p.priceRange?.minVariantPrice?.amount || '0',
+                  currencyCode: p.priceRange?.minVariantPrice?.currencyCode || 'INR',
+                  featuredImage: p.featuredImage,
+                  variantId: firstVariant?.id,
+                  availableForSale: p.availableForSale ?? true,
+                });
+              }
+            }
+          }
+          if (field.key === 'hotspots' && field.value) {
+            try {
+              hotspots = JSON.parse(field.value);
+            } catch (err) {
+              console.warn('Failed to parse hotspots JSON for look:', err);
+            }
+          }
+        }
+
+        if (modelImage && modelImage.url) {
+          parsedLooks.push({
+            id: edge.node.id,
+            title,
+            subCaption,
+            modelImage,
+            products,
+            hotspots,
+          });
+        }
+      }
+
+      if (parsedLooks.length > 0) {
+        return parsedLooks;
+      }
+    }
+  } catch (error) {
+    if (isDynamicServerError(error)) throw error;
+    console.warn('⚠️ Failed to fetch shop_the_look metaobjects from Shopify, falling back to curated looks:', error);
+  }
+
+  // Curated Fallback Data for high-fashion streetwear presentation (Avatar style transparent cutouts)
+  return [
+    {
+      id: 'look-1',
+      title: 'Studio Day',
+      subCaption: 'Heavyweight Boxy Crewneck & Tailored Wide Trousers',
+      modelImage: {
+        url: '/look_avatar_1.png',
+        altText: 'Studio Day Avatar Model',
+        width: 768,
+        height: 1376,
+      },
+      products: [
+        {
+          id: 'prod-1',
+          title: 'Heavyweight Boxy Crewneck',
+          handle: 'heavyweight-boxy-crewneck',
+          price: '4499',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop',
+            altText: 'Heavyweight Boxy Crewneck',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-1',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-2',
+          title: 'Tailored Wide-Leg Trousers',
+          handle: 'tailored-wide-leg-trousers',
+          price: '4999',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?q=80&w=600&auto=format&fit=crop',
+            altText: 'Tailored Wide-Leg Trousers',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-2',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-3',
+          title: 'Low-Profile Court Sneakers',
+          handle: 'low-profile-court-sneakers',
+          price: '5499',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=600&auto=format&fit=crop',
+            altText: 'Low-Profile Court Sneakers',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-3',
+          availableForSale: true,
+        },
+      ],
+      hotspots: [
+        { id: 'hs-1-1', x: 50, y: 32, label: 'Heavyweight Crewneck', productId: 'prod-1' },
+        { id: 'hs-1-2', x: 50, y: 64, label: 'Tailored Wide Trousers', productId: 'prod-2' },
+        { id: 'hs-1-3', x: 50, y: 92, label: 'Court Sneakers', productId: 'prod-3' },
+      ],
+    },
+    {
+      id: 'look-2',
+      title: 'Overcast Fleece',
+      subCaption: 'Heavyweight Boxy Hoodie & Relaxed Raw Denim',
+      modelImage: {
+        url: '/look_avatar_2.png',
+        altText: 'Overcast Fleece Avatar Model',
+        width: 768,
+        height: 1376,
+      },
+      products: [
+        {
+          id: 'prod-4',
+          title: 'Heather Boxy Hoodie',
+          handle: 'heather-boxy-hoodie',
+          price: '4999',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop',
+            altText: 'Heather Boxy Hoodie',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-4',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-5',
+          title: 'Relaxed Dark Raw Denim',
+          handle: 'relaxed-dark-raw-denim',
+          price: '4499',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1542272604-780c96856592?q=80&w=600&auto=format&fit=crop',
+            altText: 'Relaxed Dark Raw Denim',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-5',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-6',
+          title: 'Heritage Runner Sneakers',
+          handle: 'heritage-runner-sneakers',
+          price: '6499',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=600&auto=format&fit=crop',
+            altText: 'Heritage Runner Sneakers',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-6',
+          availableForSale: true,
+        },
+      ],
+      hotspots: [
+        { id: 'hs-2-1', x: 50, y: 34, label: 'Heather Boxy Hoodie', productId: 'prod-4' },
+        { id: 'hs-2-2', x: 50, y: 66, label: 'Relaxed Raw Denim', productId: 'prod-5' },
+        { id: 'hs-2-3', x: 50, y: 92, label: 'Heritage Runner', productId: 'prod-6' },
+      ],
+    },
+    {
+      id: 'look-3',
+      title: 'Midnight Summer',
+      subCaption: 'Heavyweight Boxy Tee & Vintage Washed Denim',
+      modelImage: {
+        url: '/look_avatar_3.png',
+        altText: 'Midnight Summer Avatar Model',
+        width: 768,
+        height: 1376,
+      },
+      products: [
+        {
+          id: 'prod-7',
+          title: 'Jet Black Heavy Boxy Tee',
+          handle: 'jet-black-heavy-boxy-tee',
+          price: '2499',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop',
+            altText: 'Jet Black Heavy Boxy Tee',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-7',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-8',
+          title: 'Vintage Washed Light Denim',
+          handle: 'vintage-washed-light-denim',
+          price: '4299',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1542272604-780c96856592?q=80&w=600&auto=format&fit=crop',
+            altText: 'Vintage Washed Light Denim',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-8',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-9',
+          title: 'Clean White Leather Court',
+          handle: 'clean-white-leather-court',
+          price: '5299',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=600&auto=format&fit=crop',
+            altText: 'Clean White Leather Court',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-9',
+          availableForSale: true,
+        },
+      ],
+      hotspots: [
+        { id: 'hs-3-1', x: 50, y: 32, label: 'Jet Black Boxy Tee', productId: 'prod-7' },
+        { id: 'hs-3-2', x: 50, y: 64, label: 'Vintage Washed Denim', productId: 'prod-8' },
+        { id: 'hs-3-3', x: 50, y: 91, label: 'White Leather Court', productId: 'prod-9' },
+      ],
+    },
+    {
+      id: 'look-4',
+      title: 'Earth Tone Architecture',
+      subCaption: 'Waffle Thermal Knit & Mocha Pleated Trousers',
+      modelImage: {
+        url: '/look_avatar_4.png',
+        altText: 'Earth Tone Architecture Avatar Model',
+        width: 768,
+        height: 1376,
+      },
+      products: [
+        {
+          id: 'prod-10',
+          title: 'Olive Waffle Thermal Knit',
+          handle: 'olive-waffle-thermal-knit',
+          price: '4299',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1618517351616-38fb9c52e04f?q=80&w=600&auto=format&fit=crop',
+            altText: 'Olive Waffle Thermal Knit',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-10',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-11',
+          title: 'Mocha Pleated Wide Trousers',
+          handle: 'mocha-pleated-wide-trousers',
+          price: '4799',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?q=80&w=600&auto=format&fit=crop',
+            altText: 'Mocha Pleated Wide Trousers',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-11',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-12',
+          title: 'Minimal Black Leather Derby',
+          handle: 'minimal-black-leather-derby',
+          price: '6499',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=600&auto=format&fit=crop',
+            altText: 'Minimal Black Leather Derby',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-12',
+          availableForSale: true,
+        },
+      ],
+      hotspots: [
+        { id: 'hs-4-1', x: 50, y: 33, label: 'Olive Waffle Knit', productId: 'prod-10' },
+        { id: 'hs-4-2', x: 50, y: 65, label: 'Mocha Pleated Trousers', productId: 'prod-11' },
+        { id: 'hs-4-3', x: 50, y: 92, label: 'Black Leather Derby', productId: 'prod-12' },
+      ],
+    },
+    {
+      id: 'look-5',
+      title: 'Tokyo Drift',
+      subCaption: 'Drop-Shoulder Vintage Tee & Parachute Cargo Pant',
+      modelImage: {
+        url: '/look_avatar_5.png',
+        altText: 'Tokyo Drift Avatar Model',
+        width: 768,
+        height: 1376,
+      },
+      products: [
+        {
+          id: 'prod-13',
+          title: 'Off-White Heavy Drop Tee',
+          handle: 'off-white-heavy-drop-tee',
+          price: '2399',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop',
+            altText: 'Off-White Heavy Drop Tee',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-13',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-14',
+          title: 'Dark Charcoal Parachute Pants',
+          handle: 'dark-charcoal-parachute-pants',
+          price: '4499',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=600&auto=format&fit=crop',
+            altText: 'Dark Charcoal Parachute Pants',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-14',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-15',
+          title: 'Classic Skate Canvas Low',
+          handle: 'classic-skate-canvas-low',
+          price: '3999',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=600&auto=format&fit=crop',
+            altText: 'Classic Skate Canvas Low',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-15',
+          availableForSale: true,
+        },
+      ],
+      hotspots: [
+        { id: 'hs-5-1', x: 50, y: 32, label: 'Off-White Drop Tee', productId: 'prod-13' },
+        { id: 'hs-5-2', x: 50, y: 64, label: 'Parachute Pants', productId: 'prod-14' },
+        { id: 'hs-5-3', x: 50, y: 92, label: 'Skate Canvas Low', productId: 'prod-15' },
+      ],
+    },
+    {
+      id: 'look-6',
+      title: 'Stealth Uniform',
+      subCaption: 'Cropped Flight Bomber & Washed Black Denim',
+      modelImage: {
+        url: '/look_avatar_6.png',
+        altText: 'Stealth Uniform Avatar Model',
+        width: 768,
+        height: 1376,
+      },
+      products: [
+        {
+          id: 'prod-16',
+          title: 'Cropped Matte Flight Bomber',
+          handle: 'cropped-matte-flight-bomber',
+          price: '6999',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=600&auto=format&fit=crop',
+            altText: 'Cropped Matte Flight Bomber',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-16',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-17',
+          title: 'Ribbed Charcoal Inner Tank',
+          handle: 'ribbed-charcoal-inner-tank',
+          price: '1699',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop',
+            altText: 'Ribbed Charcoal Inner Tank',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-17',
+          availableForSale: true,
+        },
+        {
+          id: 'prod-18',
+          title: 'Washed Black Relaxed Denim',
+          handle: 'washed-black-relaxed-denim',
+          price: '4299',
+          currencyCode: 'INR',
+          featuredImage: {
+            url: 'https://images.unsplash.com/photo-1542272604-780c96856592?q=80&w=600&auto=format&fit=crop',
+            altText: 'Washed Black Relaxed Denim',
+          },
+          variantId: 'gid://shopify/ProductVariant/fallback-18',
+          availableForSale: true,
+        },
+      ],
+      hotspots: [
+        { id: 'hs-6-1', x: 50, y: 33, label: 'Flight Bomber', productId: 'prod-16' },
+        { id: 'hs-6-2', x: 50, y: 65, label: 'Washed Black Denim', productId: 'prod-18' },
+        { id: 'hs-6-3', x: 50, y: 92, label: 'Combat Boots', productId: 'prod-16' },
+      ],
+    },
+  ];
+}

@@ -96,3 +96,47 @@ export async function removeItem(prevState: any, formData: FormData) {
   revalidatePath('/', 'layout');
   return { success: true };
 }
+
+export async function addMultipleItems(prevState: any, formData: FormData) {
+  const variantIdsRaw = formData.get("variantIds") as string;
+  if (!variantIdsRaw) {
+    return { error: "Missing variant IDs" };
+  }
+
+  const variantIds = variantIdsRaw.split(",").map(id => id.trim()).filter(Boolean);
+  if (variantIds.length === 0) {
+    return { error: "No items selected" };
+  }
+
+  const cookieStore = await cookies();
+  let cartId = cookieStore.get("cartId")?.value;
+  let cart;
+
+  if (cartId) {
+    cart = await getCart(cartId);
+  }
+
+  if (!cartId || !cart) {
+    cart = await createCart();
+    if (!cart || !cart.id) {
+      return { error: "Failed to create cart" };
+    }
+    cartId = cart.id;
+    cookieStore.set("cartId", cartId as string, {
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
+  }
+
+  const lines = variantIds.map(merchandiseId => ({ merchandiseId, quantity: 1 }));
+  const updatedCart = await addToCart(cartId as string, lines);
+
+  if (!updatedCart) {
+    return { error: "Failed to add items to cart" };
+  }
+
+  revalidatePath('/', 'layout');
+  return { success: true };
+}

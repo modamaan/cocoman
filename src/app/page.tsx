@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { HeroBanner } from "@/components/home/HeroBanner";
 import { DiscoverCollections } from "@/components/home/DiscoverCollections";
 import { SeasonalPromo } from "@/components/home/SeasonalPromo";
@@ -15,7 +16,9 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center">
-      <HeroBanner />
+      <Suspense fallback={<div className="w-full min-h-[85vh] bg-warm-off-white animate-pulse" />}>
+        <HeroBanner />
+      </Suspense>
       <DiscoverCollections />
 
       {/* Seasonal Promo Split Section */}
